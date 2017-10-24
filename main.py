@@ -40,13 +40,14 @@ def load_vgg(sess, vgg_path):
 
     model = tf.saved_model.loader.load(sess, [vgg_tag], vgg_path)
     graph = tf.get_default_graph()
-    w1 = graph.get_tensor_by_name(vgg_input_tensor_name)
+
+    input_img = graph.get_tensor_by_name(vgg_input_tensor_name)
     keep = graph.get_tensor_by_name(vgg_keep_prob_tensor_name)
     layer3 = graph.get_tensor_by_name(vgg_layer3_out_tensor_name)
     layer4 = graph.get_tensor_by_name(vgg_layer4_out_tensor_name)
     layer7 = graph.get_tensor_by_name(vgg_layer7_out_tensor_name)
 
-    return w1, keep, layer3, layer4, layer7
+    return input_img, keep, layer3, layer4, layer7
 
 
 tests.test_load_vgg(load_vgg, tf)
@@ -62,7 +63,28 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
+
+    '''
+    1x1
+    upsample - transpose
+    1x1
+    upsample
+    upsample
+    '''
+    layer7_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, kernel_size=1, padding='same') # 1x1 convolutional layer for layer 7
+
+    layer7_up = tf.layers.conv2d_transpose(layer7_1x1, num_classes, 4, 2, 'same')
+
+
+
+
+
+
+
     return None
+
+
+
 tests.test_layers(layers)
 
 
