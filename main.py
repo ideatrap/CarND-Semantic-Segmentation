@@ -64,24 +64,16 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     """
     # TODO: Implement function
 
-    '''
-    1x1
-    upsample - transpose
-    1x1
-    upsample
-    upsample
-    '''
     layer7_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, kernel_size=1, padding='same') # 1x1 convolutional layer for layer 7
+    layer7_up = tf.layers.conv2d_transpose(layer7_1x1, num_classes, 4, 2, 'same') #upsample
+    layer4_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, kernel_size=1, padding='same') # 1x1 for layer 4
+    layer7_4_skip = tf.add(layer7_up,layer4_1x1,) # skip layer
+    layer7_4_up = tf.layers.conv2d_transpose(layer7_4_skip, num_classes, 4, 2, 'same') # upsample
+    layer3_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, kernel_size=1, padding='same') #1x1 for layer 3
+    layer7_4_3_skip = tf.add(layer7_4_up,layer3_1x1,) #skip layer
+    output = tf.layers.conv2d_transpose(layer7_4_3_skip, num_classes,16, 8, 'same')
 
-    layer7_up = tf.layers.conv2d_transpose(layer7_1x1, num_classes, 4, 2, 'same')
-
-
-
-
-
-
-
-    return None
+    return output
 
 
 
@@ -98,7 +90,16 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     :return: Tuple of (logits, train_op, cross_entropy_loss)
     """
     # TODO: Implement function
-    return None, None, None
+
+
+    logits = tf.reshape(nn_last_layer,(-1,num_classes))
+    cross_entropy_loss=tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=correct_label))
+
+    optimizer=tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy_loss)
+
+    return logits, optimizer, cross_entropy_loss
+
+
 tests.test_optimize(optimize)
 
 
@@ -118,9 +119,22 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param learning_rate: TF Placeholder for learning rate
     """
     # TODO: Implement function
-    pass
-tests.test_train_nn(train_nn)
 
+    #initialize tensorflow variables
+    sess.run(tf.global_variables_initializer())
+
+
+    for epoch in range(epochs):
+        print("Epoch {} running.".format(epoch))
+        for images, labels in get_batches_fn(batch_size):
+            _, loss = sess.run([train_op, cross_entropy_loss],feed_dict={input_image: images,correct_label: labels,keep_prob: 0.75, learning_rate:0.001})
+
+        print("Loss: {}".format(loss))
+
+
+
+
+tests.test_train_nn(train_nn)
 
 def run():
     num_classes = 2
