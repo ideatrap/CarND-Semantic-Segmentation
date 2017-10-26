@@ -160,7 +160,7 @@ def run():
         # TODO: Build NN using load_vgg, layers, and optimize function
 
         epochs = 10
-        batch_size = 5
+        batch_size = 16
 
         learning_rate = tf.placeholder(tf.float32)
         correct_label = tf.placeholder(tf.float32,(None, None, None, num_classes))
