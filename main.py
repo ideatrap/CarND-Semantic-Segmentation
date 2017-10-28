@@ -64,14 +64,20 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     """
     # TODO: Implement function
 
-    layer7_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, kernel_size=1, padding='same') # 1x1 convolutional layer for layer 7
-    layer7_up = tf.layers.conv2d_transpose(layer7_1x1, num_classes, 4, 2, 'same') #upsample
-    layer4_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, kernel_size=1, padding='same') # 1x1 for layer 4
-    layer7_4_skip = tf.add(layer7_up,layer4_1x1,) # skip layer
-    layer7_4_up = tf.layers.conv2d_transpose(layer7_4_skip, num_classes, 4, 2, 'same') # upsample
-    layer3_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, kernel_size=1, padding='same') #1x1 for layer 3
-    layer7_4_3_skip = tf.add(layer7_4_up,layer3_1x1,) #skip layer
-    output = tf.layers.conv2d_transpose(layer7_4_3_skip, num_classes,16, 8, 'same')
+    layer7_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, kernel_size=1, padding='same', kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) # 1x1 convolutional layer for layer 7
+    layer7_up = tf.layers.conv2d_transpose(layer7_1x1, num_classes, 4, 2, 'same', kernel_initializer=tf.truncated_normal_initializer(), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) #upsample
+
+    layer4_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, kernel_size=1, padding='same', kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) # 1x1 for layer 4
+
+    layer7_4_skip = tf.add(layer7_up,layer4_1x1) # skip layer
+
+    layer7_4_up = tf.layers.conv2d_transpose(layer7_4_skip, num_classes, 4, 2, 'same', kernel_initializer=tf.truncated_normal_initializer(), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) # upsample
+
+    layer3_1x1 = tf.layers.conv2d(vgg_layer3_out, num_classes, kernel_size=1, padding='same', kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) #1x1 for layer 3
+
+    layer7_4_3_skip = tf.add(layer7_4_up,layer3_1x1) #skip layer
+
+    output = tf.layers.conv2d_transpose(layer7_4_3_skip, num_classes,16, 8, 'same', kernel_initializer=tf.truncated_normal_initializer(), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3))
 
     return output
 
