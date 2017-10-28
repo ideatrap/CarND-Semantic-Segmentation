@@ -165,7 +165,7 @@ def run():
 
         # TODO: Build NN using load_vgg, layers, and optimize function
 
-        epochs = 10
+        epochs = 20
         batch_size = 16
 
         learning_rate = tf.placeholder(tf.float32)
