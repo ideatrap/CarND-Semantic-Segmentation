@@ -66,7 +66,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
 
     layer7_1x1 = tf.layers.conv2d(vgg_layer7_out, num_classes, kernel_size=1, padding='same', kernel_initializer=tf.truncated_normal_initializer(stddev=0.01), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) # 1x1 convolutional layer for layer 7
 
-    layer7_up = tf.layers.conv2d_transpose(layer7_1x1, num_classes, 4, strides= (2, 2), 'same', kernel_initializer=tf.truncated_normal_initializer(stddev=0.01), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) #upsample
+    layer7_up = tf.layers.conv2d_transpose(layer7_1x1, num_classes, 4, strides= (2, 2), padding='same', kernel_initializer=tf.truncated_normal_initializer(stddev=0.01), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) #upsample
 
     layer4_1x1 = tf.layers.conv2d(vgg_layer4_out, num_classes, kernel_size=1, padding='same', kernel_initializer=tf.truncated_normal_initializer(stddev=0.01), kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3)) # 1x1 for layer 4
 
